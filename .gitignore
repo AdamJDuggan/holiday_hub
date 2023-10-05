@@ -1,10 +1,6 @@
-# Dependency directories
+build/
+coverage/
 node_modules/
-
-# Build directory
-
-# Optional npm cache directory
+build/
 .npm
-
-# dotenv environment variables file
 .env

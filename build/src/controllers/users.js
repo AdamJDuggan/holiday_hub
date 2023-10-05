@@ -102,15 +102,19 @@ var login = asyncHandler(function (req, res) { return __awaiter(void 0, void 0, 
             case 2:
                 correctPassword = _b.sent();
                 if (user && correctPassword) {
+                    req.session.authenticated = true;
+                    req.session.user = user;
                     res.json({
                         _id: user.id,
                         name: user.name,
                         email: user.email,
                         token: generateToken(user._id),
+                        sessionID: req.sessionID,
+                        session: req.session
                     });
                 }
                 else {
-                    res.status(400);
+                    res.status(403);
                     throw new Error("Invalid credentials");
                 }
                 return [2 /*return*/];

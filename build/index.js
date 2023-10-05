@@ -43,6 +43,7 @@ var https = require("https");
 var helment = require("helmet");
 var express = require("express");
 var dotenv = require("dotenv");
+var session = require("express-session");
 // Services
 var mongoConnect = require("./src/services/mongo").mongoConnect;
 // Routes
@@ -55,6 +56,24 @@ var app = express();
 dotenv.config();
 // Security realted middleware
 app.use(helment());
+var store = new session.MemoryStore();
+// Use sessions
+// TODO- intergate Redis memory cache
+app.use(session({
+    secret: "343ji43j4n3jn4jk3n",
+    resave: false,
+    saveUninitialized: false,
+    // Prevents cookies from being accessed by browser JS scripts
+    cookie: {
+        httpOnly: true,
+        secure: true,
+    },
+    store: store,
+}));
+app.use(function (req, res, next) {
+    console.log("Store", store);
+    next();
+});
 /**
  * Prevent attackers sending requests with large request bodies
  * that can exhaust server memory and/or fill disk space

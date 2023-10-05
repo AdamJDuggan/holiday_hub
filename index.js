@@ -5,6 +5,8 @@ const https = require("https");
 const helment = require("helmet");
 const express = require("express");
 const dotenv = require("dotenv");
+const session = require("express-session");
+
 // Services
 const { mongoConnect } = require("./src/services/mongo");
 // Routes
@@ -21,6 +23,29 @@ dotenv.config();
 
 // Security realted middleware
 app.use(helment());
+
+const store = new session.MemoryStore();
+
+// Use sessions
+// TODO- intergate Redis memory cache
+app.use(
+  session({
+    secret: "343ji43j4n3jn4jk3n",
+    resave: false,
+    saveUninitialized: false,
+    // Prevents cookies from being accessed by browser JS scripts
+    cookie: {
+      httpOnly: true,
+      secure: true,
+    },
+    store,
+  })
+);
+
+app.use((req, res, next) => {
+  console.log("Store", store);
+  next();
+});
 
 /**
  * Prevent attackers sending requests with large request bodies

@@ -52,14 +52,19 @@ const login = asyncHandler(async (req: typeof Request, res: typeof Response) => 
   const user = await User.findOne({ email });
   const correctPassword = await bcrypt.compare(password, user.password);
   if (user && correctPassword) {
+    req.session.authenticated = true;
+    req.session.user = user
     res.json({
       _id: user.id,
       name: user.name,
       email: user.email,
       token: generateToken(user._id),
+      sessionID: req.sessionID,
+      session: req.session
+
     });
   } else {
-    res.status(400);
+    res.status(403);
     throw new Error("Invalid credentials");
   }
 });

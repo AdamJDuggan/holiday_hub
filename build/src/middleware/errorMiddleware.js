@@ -51,7 +51,7 @@ var isValidMongoId = asyncHandler(function (req, res, next) { return __awaiter(v
         return [2 /*return*/];
     });
 }); });
-var errorHandler = function (err, req, res, next) {
+var errorHandler = function (err, req, res) {
     var statusCode = res.statusCode ? res.statusCode : 500;
     return res.status(statusCode).json({
         message: err.message,

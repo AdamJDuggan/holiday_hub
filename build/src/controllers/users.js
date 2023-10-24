@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 // 3rd party
 const jwt = require("jsonwebtoken");
@@ -9,6 +12,8 @@ const { Request, Response } = require("express");
 const User = require("../models/usersModel");
 // Services
 const sessionStore = require("../services/store");
+// Utils
+const createRandomId_1 = __importDefault(require("../utils/createRandomId"));
 const regsiterUser = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
@@ -48,8 +53,9 @@ const login = asyncHandler(async (req, res) => {
     const user = await User.findOne({ email });
     const correctPassword = await bcrypt.compare(password, user.password);
     if (user && correctPassword) {
-        res.cookie("userId", "blah");
-        await sessionStore.set("blah", user.id);
+        const randomId = (0, createRandomId_1.default)();
+        res.cookie("userId", randomId);
+        await sessionStore.set(randomId, user.id);
         res.json({
             _id: user.id,
             name: user.name,

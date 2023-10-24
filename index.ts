@@ -1,6 +1,9 @@
+import { Request, Response } from "express";
+
 // Node
 const fs = require("fs");
 const https = require("https");
+const { Request, Response } = require("express");
 // 3rd party
 const cookieParser = require("cookie-parser");
 const helment = require("helmet");
@@ -50,7 +53,7 @@ app.use(express.urlencoded({ extended: false, limit: "1kb" }));
 app.use(express.json({ limit: "1kb" }));
 
 // Main route
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.status(200).send("HI!");
 });
 

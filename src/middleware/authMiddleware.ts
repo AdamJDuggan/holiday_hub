@@ -31,6 +31,8 @@ const protect = asyncHandler(async (req: typeof Request, res: typeof Response, n
       const cookie = req.cookies["userId"];
       const sessionUserId = await sessionStore.get(cookie);
 
+      console.log(sessionUserId)
+
      
 
 

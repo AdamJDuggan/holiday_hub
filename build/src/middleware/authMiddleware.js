@@ -25,6 +25,7 @@ const protect = asyncHandler(async (req, res, next) => {
             // Get user id from Redis session store
             const cookie = req.cookies["userId"];
             const sessionUserId = await sessionStore.get(cookie);
+            console.log(sessionUserId);
             // Resolve if ids match
             if (JSON.stringify(sessionUserId) === JSON.stringify(mongoUser._id))
                 return next();

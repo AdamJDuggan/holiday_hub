@@ -7,6 +7,8 @@ const { Request, Response } = require("express");
 const User = require("../models/usersModel");
 // Services
 const sessionStore = require("../services/store")
+// Utils
+import createRandomId from "../utils/createRandomId";
 
 const regsiterUser = asyncHandler(async (req: typeof Request, res: typeof Response) => {
   const { name, email, password } = req.body;
@@ -54,10 +56,12 @@ const login = asyncHandler(async (req: typeof Request, res: typeof Response) => 
   const user = await User.findOne({ email });
   const correctPassword = await bcrypt.compare(password, user.password);
   if (user && correctPassword) {
+
+    const randomId = createRandomId()
     
-    res.cookie("userId", "blah");
+    res.cookie("userId", randomId);
     
-    await sessionStore.set("blah", user.id);
+    await sessionStore.set(randomId, user.id);
     
     res.json({
       _id: user.id,

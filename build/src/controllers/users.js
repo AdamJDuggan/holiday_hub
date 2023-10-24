@@ -82,8 +82,8 @@ var regsiterUser = asyncHandler(function (req, res) { return __awaiter(void 0, v
                     });
                 }
                 else {
-                    res.status(400);
-                    throw new Error("Invalid user data");
+                    res.status(500);
+                    throw new Error("Server error registering user");
                 }
                 return [2 /*return*/];
         }
@@ -103,19 +103,16 @@ var login = asyncHandler(function (req, res) { return __awaiter(void 0, void 0, 
                 correctPassword = _b.sent();
                 if (user && correctPassword) {
                     req.session.authenticated = true;
-                    req.session.user = user;
+                    req.session.userId = user.id;
                     res.json({
                         _id: user.id,
                         name: user.name,
                         email: user.email,
                         token: generateToken(user._id),
-                        sessionID: req.sessionID,
-                        session: req.session
                     });
                 }
                 else {
-                    res.status(403);
-                    throw new Error("Invalid credentials");
+                    return [2 /*return*/, res.status(400).json({ message: "Invalid credentials" })];
                 }
                 return [2 /*return*/];
         }
@@ -123,8 +120,12 @@ var login = asyncHandler(function (req, res) { return __awaiter(void 0, void 0, 
 }); });
 var getMe = asyncHandler(function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        res.status(200).json(req.user);
-        return [2 /*return*/];
+        return [2 /*return*/, res.status(200).json({ ok: "true" })];
+    });
+}); });
+var logout = asyncHandler(function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        return [2 /*return*/, res.status(200).json({ ok: "true" })];
     });
 }); });
 var generateToken = function (id) {

@@ -2,18 +2,19 @@
 const fs = require("fs");
 const https = require("https");
 // 3rd party
+const cookieParser = require("cookie-parser");
 const helment = require("helmet");
 const express = require("express");
 const dotenv = require("dotenv");
 const session = require("express-session");
-
 // Services
 const { mongoConnect } = require("./src/services/mongo");
+const store = require("./src/services/store");
+
 // Routes
 const goalRouter = require("./src/routes/goals");
 const userRouter = require("./src/routes/users");
 // Custom middleware
-const { errorHandler } = require("./src/middleware/errorMiddleware");
 
 const PORT = process.env.PORT || 5000;
 
@@ -24,13 +25,14 @@ dotenv.config();
 // Security realted middleware
 app.use(helment());
 
-const store = new session.MemoryStore();
+// Access session cookies in requests
+app.use(cookieParser());
 
-// Use sessions
 // TODO- intergate Redis memory cache
 app.use(
   session({
-    secret: "343ji43j4n3jn4jk3n",
+    name: "Alpha 3",
+    secret: "1234",
     resave: false,
     saveUninitialized: false,
     // Prevents cookies from being accessed by browser JS scripts
@@ -42,17 +44,12 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  console.log("Store", store);
-  next();
-});
-
 /**
  * Prevent attackers sending requests with large request bodies
  * that can exhaust server memory and/or fill disk space
  */
-app.use(express.json({ limit: "1kb" }));
 app.use(express.urlencoded({ extended: false, limit: "1kb" }));
+app.use(express.json({ limit: "1kb" }));
 
 // Main route
 app.get("/", (req, res) => {
@@ -62,8 +59,6 @@ app.get("/", (req, res) => {
 /** Routes */
 app.use("/api/goals", goalRouter);
 app.use("/api/users", userRouter);
-
-app.use(errorHandler);
 
 // Server
 const startServer = async () => {
@@ -78,6 +73,10 @@ const startServer = async () => {
     )
     .listen(PORT, () => console.log(`Server started on port ${PORT}`));
 };
+
+startServer();
+
+module.exports = app;
 
 /**
  * Not needed if running pm2 which will do this for us
@@ -96,7 +95,3 @@ const startServer = async () => {
 // } else {
 //   startServer();
 // }
-
-startServer();
-
-module.exports = app;

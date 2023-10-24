@@ -2,6 +2,7 @@ import {Express} from 'express'
 const express = require("express");
 
 const router: Express = express.Router();
+
 const { regsiterUser, login, getMe } = require("../controllers/users");
 const {
   protect,

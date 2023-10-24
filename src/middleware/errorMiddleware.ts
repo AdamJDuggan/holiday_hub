@@ -2,9 +2,6 @@
 const { Request, Response, NextFunction } = require("express");
 const asyncHandler = require("express-async-handler");
 
-
-
-
 const isValidMongoId = asyncHandler(async (req: typeof Request, res: typeof Response, next: typeof NextFunction) => {
   if(req.params.id.match(/^[0-9a-fA-F]{24}$/)){
     next()
@@ -15,7 +12,7 @@ const isValidMongoId = asyncHandler(async (req: typeof Request, res: typeof Resp
 });
 
 
-const errorHandler = (err: Error, req: typeof Request, res: typeof Response,) => {
+const errorHandler = (err: Error, req: typeof Request, res: typeof Response) => {
   const statusCode = res.statusCode ? res.statusCode : 500;
   return res.status(statusCode).json({
     message: err.message,

@@ -40,27 +40,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs");
 var https = require("https");
 // 3rd party
+var cookieParser = require("cookie-parser");
 var helment = require("helmet");
 var express = require("express");
 var dotenv = require("dotenv");
 var session = require("express-session");
 // Services
 var mongoConnect = require("./src/services/mongo").mongoConnect;
+var store = require("./src/services/store");
 // Routes
 var goalRouter = require("./src/routes/goals");
 var userRouter = require("./src/routes/users");
 // Custom middleware
-var errorHandler = require("./src/middleware/errorMiddleware").errorHandler;
 var PORT = process.env.PORT || 5000;
 var app = express();
 dotenv.config();
 // Security realted middleware
 app.use(helment());
-var store = new session.MemoryStore();
-// Use sessions
+// Access session cookies in requests
+app.use(cookieParser());
 // TODO- intergate Redis memory cache
 app.use(session({
-    secret: "343ji43j4n3jn4jk3n",
+    name: "Alpha 3",
+    secret: "1234",
     resave: false,
     saveUninitialized: false,
     // Prevents cookies from being accessed by browser JS scripts
@@ -70,16 +72,12 @@ app.use(session({
     },
     store: store,
 }));
-app.use(function (req, res, next) {
-    console.log("Store", store);
-    next();
-});
 /**
  * Prevent attackers sending requests with large request bodies
  * that can exhaust server memory and/or fill disk space
  */
-app.use(express.json({ limit: "1kb" }));
 app.use(express.urlencoded({ extended: false, limit: "1kb" }));
+app.use(express.json({ limit: "1kb" }));
 // Main route
 app.get("/", function (req, res) {
     res.status(200).send("HI!");
@@ -87,7 +85,6 @@ app.get("/", function (req, res) {
 /** Routes */
 app.use("/api/goals", goalRouter);
 app.use("/api/users", userRouter);
-app.use(errorHandler);
 // Server
 var startServer = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
@@ -105,6 +102,8 @@ var startServer = function () { return __awaiter(void 0, void 0, void 0, functio
         }
     });
 }); };
+startServer();
+module.exports = app;
 /**
  * Not needed if running pm2 which will do this for us
  * Cluster to run multiple processes
@@ -122,5 +121,3 @@ var startServer = function () { return __awaiter(void 0, void 0, void 0, functio
 // } else {
 //   startServer();
 // }
-startServer();
-module.exports = app;

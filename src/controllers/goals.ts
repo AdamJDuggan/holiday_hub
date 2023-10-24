@@ -14,8 +14,7 @@ const getGoals = asyncHandler(async (req: typeof Request, res: typeof Response) 
 
 const postGoal = asyncHandler(async (req: typeof Request, res: typeof Response) => {
   if (!req.body.text) {
-    res.status(400);
-    throw new Error("Please add a text field");
+    return res.status(400).json({message: "Please add a text field"});
   }
   const createdGoal = await Goal.create({
     text: req.body.text,
@@ -27,8 +26,7 @@ const postGoal = asyncHandler(async (req: typeof Request, res: typeof Response) 
 const updateGoal = asyncHandler(async (req: typeof Request, res: typeof Response) => {
   const goal = await Goal.findById(req.params.id);
   if (!goal) {
-    res.status(400);
-    throw new Error("Goal not found");
+    return res.status(400).json({message: "Goal not found"});
   }
   const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
@@ -40,8 +38,7 @@ const deleteGoal = asyncHandler(async (req: typeof Request, res: typeof Response
   const {id} = req.params
     const goal = await Goal.findById(id);
     if(!goal){
-      res.status(400);
-      throw new Error("Goal not found!");
+      return res.status(400).json({message: "Goal not found!"});
     }
       await goal.deleteOne();
       res.status(200).json({ id, message: "Goal deleted" });

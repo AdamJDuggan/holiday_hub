@@ -59,8 +59,7 @@ var postGoal = asyncHandler(function (req, res) { return __awaiter(void 0, void 
         switch (_a.label) {
             case 0:
                 if (!req.body.text) {
-                    res.status(400);
-                    throw new Error("Please add a text field");
+                    return [2 /*return*/, res.status(400).json({ message: "Please add a text field" })];
                 }
                 return [4 /*yield*/, Goal.create({
                         text: req.body.text,
@@ -80,8 +79,7 @@ var updateGoal = asyncHandler(function (req, res) { return __awaiter(void 0, voi
             case 1:
                 goal = _a.sent();
                 if (!goal) {
-                    res.status(400);
-                    throw new Error("Goal not found");
+                    return [2 /*return*/, res.status(400).json({ message: "Goal not found" })];
                 }
                 return [4 /*yield*/, Goal.findByIdAndUpdate(req.params.id, req.body, {
                         new: true,
@@ -103,8 +101,7 @@ var deleteGoal = asyncHandler(function (req, res) { return __awaiter(void 0, voi
             case 1:
                 goal = _a.sent();
                 if (!goal) {
-                    res.status(400);
-                    throw new Error("Goal not found!");
+                    return [2 /*return*/, res.status(400).json({ message: "Goal not found!" })];
                 }
                 return [4 /*yield*/, goal.deleteOne()];
             case 2:

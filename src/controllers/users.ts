@@ -41,8 +41,8 @@ const regsiterUser = asyncHandler(async (req: typeof Request, res: typeof Respon
       token: generateToken(user._id),
     });
   } else {
-    res.status(400);
-    throw new Error("Invalid user data");
+    res.status(500);
+    throw new Error("Server error registering user");
   }
 });
 
@@ -53,25 +53,27 @@ const login = asyncHandler(async (req: typeof Request, res: typeof Response) => 
   const correctPassword = await bcrypt.compare(password, user.password);
   if (user && correctPassword) {
     req.session.authenticated = true;
-    req.session.user = user
+    req.session.userId = user.id
     res.json({
       _id: user.id,
       name: user.name,
       email: user.email,
       token: generateToken(user._id),
-      sessionID: req.sessionID,
-      session: req.session
-
     });
   } else {
-    res.status(403);
-    throw new Error("Invalid credentials");
+    return res.status(400).json({message: "Invalid credentials" });
   }
 });
 
 const getMe = asyncHandler(async (req: typeof Request, res: typeof Response) => {
-  res.status(200).json(req.user);
+  return res.status(200).json({ok: "true"});
 });
+
+const logout = asyncHandler(async (req: typeof Request, res: typeof Response) => {
+  return res.status(200).json({ok: "true"});
+});
+
+
 
 const generateToken = (id: string) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {

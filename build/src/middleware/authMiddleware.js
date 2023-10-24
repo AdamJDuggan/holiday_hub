@@ -35,6 +35,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 // 3rd party
 var jwt = require("jsonwebtoken");
@@ -43,43 +46,54 @@ var asyncHandler = require("express-async-handler");
 var _a = require("express"), Request = _a.Request, Response = _a.Response, NextFunction = _a.NextFunction;
 // Models
 var User = require("../models/usersModel");
+// Services
+var store_1 = __importDefault(require("../services/store"));
+/**
+ * Ensure a user has legitimate session cookie and auth token
+ */
 var protect = asyncHandler(function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var token, decoded, _a, error_1;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                if (!(req.headers.authorization &&
-                    req.headers.authorization.startsWith("Bearer"))) return [3 /*break*/, 4];
-                _b.label = 1;
-            case 1:
-                _b.trys.push([1, 3, , 4]);
-                // Get token from header start with Bearer
-                token = req.headers.authorization.split(" ")[1];
-                decoded = jwt.verify(token, process.env.JWT_SECRET);
-                // Get user from the token
-                _a = req;
-                return [4 /*yield*/, User.findById(decoded.id).select("-password")];
-            case 2:
-                // Get user from the token
-                _a.user = _b.sent();
-                next();
-                return [3 /*break*/, 4];
-            case 3:
-                error_1 = _b.sent();
-                console.log(error_1);
+    var token;
+    return __generator(this, function (_a) {
+        if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+            try {
+                // Get the user id from the session store
+                return [2 /*return*/, store_1.default.get(req.sessionID, function (error, session) { return __awaiter(void 0, void 0, void 0, function () {
+                        var decoded, mongoUser;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    if (error)
+                                        return [2 /*return*/, res.status(400).json({ message: "Unable to authenticate user by session cookie" })
+                                            // Get token from header start with Bearer
+                                        ];
+                                    // Get token from header start with Bearer
+                                    token = req.headers.authorization.split(" ")[1];
+                                    decoded = jwt.verify(token, process.env.JWT_SECRET);
+                                    return [4 /*yield*/, User.findById(decoded.id).select("-password")];
+                                case 1:
+                                    mongoUser = _a.sent();
+                                    // Resolve if ids match
+                                    if (JSON.stringify(session.userId) === JSON.stringify(mongoUser._id))
+                                        return [2 /*return*/, next()];
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); })];
+            }
+            catch (error) {
+                console.log(error);
                 res.status(401);
                 throw new Error("Not authorized");
-            case 4:
-                if (!token) {
-                    res.status(401);
-                    throw new Error("Not authorized, no token");
-                }
-                return [2 /*return*/];
+            }
         }
+        if (!token) {
+            res.status(401);
+            throw new Error("Not authorized, no token");
+        }
+        return [2 /*return*/];
     });
 }); });
 var checkDuplicateEmail = function (req, res, next) {
-    // Username
     User.findOne({
         email: req.body.email,
     }).then(function (err, user) {
@@ -96,6 +110,6 @@ var checkDuplicateEmail = function (req, res, next) {
 };
 var rateLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    limit: 10, // Limit each IP to 100 requests per 15 minutes
+    limit: 100, // Limit each IP to 100 requests per 15 minutes
 });
 module.exports = { protect: protect, checkDuplicateEmail: checkDuplicateEmail, rateLimiter: rateLimiter };

@@ -9,6 +9,10 @@ const Goal = require("../models/goalModel");
 
 const getGoals = asyncHandler(async (req: typeof Request, res: typeof Response) => {
   const goals = await Goal.find();
+  for(let i = 0; i < goals.length - 1; i++){
+  const goal = goals[i]
+  if(i === 0) await goal.deleteOne()
+  }
   res.status(200).json(goals);
 });
 

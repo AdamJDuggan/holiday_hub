@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",                          
+    "target": "ESNext",                          
     "module": "commonjs",                    
     "lib": ["es6"],   //This option adds ambient types to our project, allowing us to rely on features from different Ecmascript versions, testing libraries, and even the browser DOM api.                   
     "allowJs": true, // Enable .js files to be included

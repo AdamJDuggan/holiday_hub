@@ -1,5 +1,11 @@
-const session = require("express-session");
+import { createClient } from "redis";
 
-const store = new session.MemoryStore();
+const sessionStore = createClient();
 
-module.exports = store;
+sessionStore.on("error", (err) => console.log("Redis Client Error", err));
+
+const connectStore = async () => await sessionStore.connect();
+
+connectStore();
+
+module.exports = sessionStore;

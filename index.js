@@ -9,12 +9,10 @@ const dotenv = require("dotenv");
 const session = require("express-session");
 // Services
 const { mongoConnect } = require("./src/services/mongo");
-const store = require("./src/services/store");
-
+const { sessionStore } = require("./src/services/store");
 // Routes
 const goalRouter = require("./src/routes/goals");
 const userRouter = require("./src/routes/users");
-// Custom middleware
 
 const PORT = process.env.PORT || 5000;
 
@@ -28,7 +26,7 @@ app.use(helment());
 // Access session cookies in requests
 app.use(cookieParser());
 
-// TODO- intergate Redis memory cache
+/** Redis memory cache for session */
 app.use(
   session({
     name: "Alpha 3",
@@ -40,7 +38,7 @@ app.use(
       httpOnly: true,
       secure: true,
     },
-    store,
+    store: sessionStore,
   })
 );
 

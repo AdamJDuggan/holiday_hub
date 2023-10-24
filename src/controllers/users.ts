@@ -5,6 +5,8 @@ const asyncHandler = require("express-async-handler");
 const { Request, Response } = require("express");
 // Models
 const User = require("../models/usersModel");
+// Services
+const sessionStore = require("../services/store")
 
 const regsiterUser = asyncHandler(async (req: typeof Request, res: typeof Response) => {
   const { name, email, password } = req.body;
@@ -52,8 +54,11 @@ const login = asyncHandler(async (req: typeof Request, res: typeof Response) => 
   const user = await User.findOne({ email });
   const correctPassword = await bcrypt.compare(password, user.password);
   if (user && correctPassword) {
-    req.session.authenticated = true;
-    req.session.userId = user.id
+    
+    res.cookie("userId", "blah");
+    
+    await sessionStore.set("blah", user.id);
+    
     res.json({
       _id: user.id,
       name: user.name,

@@ -24,10 +24,10 @@ var addSorting = (function () {
         return getTableHeader().querySelectorAll('th')[n];
     }
     function onFilterInput() {
-        var searchValue = document.getElementById('fileSearch').value;
-        var rows = document.getElementsByTagName('tbody')[0].children;
-        for (var i = 0; i < rows.length; i++) {
-            var row = rows[i];
+        const searchValue = document.getElementById('fileSearch').value;
+        const rows = document.getElementsByTagName('tbody')[0].children;
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
             if (row.textContent
                 .toLowerCase()
                 .includes(searchValue.toLowerCase())) {

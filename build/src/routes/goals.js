@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // 3rd party
-var express = require("express");
+const express = require("express");
 // Controller
-var _a = require("../controllers/goals"), getGoals = _a.getGoals, postGoal = _a.postGoal, updateGoal = _a.updateGoal, deleteGoal = _a.deleteGoal;
+const { getGoals, postGoal, updateGoal, deleteGoal, } = require("../controllers/goals");
 // Middleware
-var isValidMongoId = require("../middleware/errorMiddleware").isValidMongoId;
-var goalRouter = express.Router();
+const { isValidMongoId } = require("../middleware/errorMiddleware");
+const goalRouter = express.Router();
 goalRouter.route("/").get(getGoals).post(postGoal);
 goalRouter.use("/:id", isValidMongoId);
 goalRouter.route("/:id").put(updateGoal).delete(deleteGoal);

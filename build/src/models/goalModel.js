@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose = require("mongoose");
-var goalSchema = new mongoose.Schema({
+const mongoose = require("mongoose");
+const goalSchema = new mongoose.Schema({
     text: {
         type: String,
         required: [true, "Please add a text value"],

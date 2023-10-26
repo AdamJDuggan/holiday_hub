@@ -14,5 +14,5 @@ jobs:
         with:
           node-version: "20"
       - run: npm install
-      - run: npm run watch --prefix server
+      - run: npm run server --prefix server
       - run: npm test

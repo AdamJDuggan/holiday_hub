@@ -1,12 +1,18 @@
 {
   "name": "holiday_hub",
   "version": "1.0.0",
-  "description": "",
+  "description": "Social media app to plan group holidays and share memories",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "install-server": "npm install --prefix server",
+    "install-client": "npm install --prefix client",
+    "server": "npm run server --prefix server",
+    "client": "cd client && ng serve",
+    "deploy": "npm run build --prefix client && ng serve --project server",
+    "test": "npm test --prefix server && ng test --project client"
   },
   "keywords": [],
-  "author": "",
+  "author": "Adam Duggan",
   "license": "ISC"
 }
+

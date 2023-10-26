@@ -1,0 +1,19 @@
+name: Test
+on:
+  push:
+    branches: [master]
+  pull_requests:
+    branches: [master]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js version 20.9.0 lts
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.9.0"
+      - run: npm install
+      - run: npm run client
+  deploy:
+    needs: build

@@ -5,7 +5,7 @@ const request = require("supertest");
 const assert = require("assert");
 const { Response } = require("express");
 // Server
-const app = require("../../index.js");
+const app = require("../../index");
 // Services
 const { mongoConnect, mongoDisconnect } = require("../services/mongo");
 // Models

@@ -28,4 +28,9 @@ const migrateBlackListCollection = async () => {
             token.deleteOne();
     }
 };
-module.exports = { mongoConnect, mongoDisconnect, isTokenBlackListed, migrateBlackListCollection };
+module.exports = {
+    mongoConnect,
+    mongoDisconnect,
+    isTokenBlackListed,
+    migrateBlackListCollection,
+};

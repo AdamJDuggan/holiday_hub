@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js version
+      - name: Use Node.js version 21.9.0
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: "21.9.0"
       - run: npm install
-      - run: cd client && ng serve
+      - run: rum run watch --prefix client
       - run: npm test

@@ -23,7 +23,7 @@ const app = express();
 
 dotenv.config();
 
-// Security realted middleware
+// Security realted middleware!!
 app.use(helment());
 
 // Access session cookies in requests
@@ -52,12 +52,12 @@ app.use(
 app.use(express.urlencoded({ extended: false, limit: "1kb" }));
 app.use(express.json({ limit: "1kb" }));
 
-// 
-app.use(express.static('../client/dist/client'))
+//
+app.use(express.static("../client/dist/client"));
 
-// Main route serving Angular app 
+// Main route serving Angular app
 app.get("/", (req: Request, res: Response) => {
-  res.sendFile('index.html', {root: __dirname});
+  res.sendFile("index.html", { root: __dirname });
 });
 
 /** Routes */

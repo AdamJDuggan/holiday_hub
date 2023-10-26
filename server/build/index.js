@@ -19,7 +19,7 @@ const userRouter = require("./src/routes/users");
 const PORT = process.env.PORT || 5000;
 const app = express();
 dotenv.config();
-// Security realted middleware
+// Security realted middleware!!
 app.use(helment());
 // Access session cookies in requests
 app.use(cookieParser());
@@ -42,11 +42,11 @@ app.use(session({
  */
 app.use(express.urlencoded({ extended: false, limit: "1kb" }));
 app.use(express.json({ limit: "1kb" }));
-// 
-app.use(express.static('../client/dist/client'));
-// Main route serving Angular app 
+//
+app.use(express.static("../client/dist/client"));
+// Main route serving Angular app
 app.get("/", (req, res) => {
-    res.sendFile('index.html', { root: __dirname });
+    res.sendFile("index.html", { root: __dirname });
 });
 /** Routes */
 app.use("/api/goals", goalRouter);

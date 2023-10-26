@@ -5,11 +5,13 @@
   "main": "index.js",
   "scripts": {
     "install-server": "npm install --prefix server",
+    "build-server": "npm run build --prefix server",
+    "test-server": "npm test --prefix server",
+    "run-server": "npm run server --prefix server",
     "install-client": "npm install --prefix client",
     "server": "npm run server --prefix server",
-    "client": "cd client && ng serve",
-    "deploy": "npm run build --prefix client && ng serve --project server",
-    "test": "npm test --prefix server && ng test --project client"
+    "client": "cd client && ng serve"
+    
   },
   "keywords": [],
   "author": "Adam Duggan",

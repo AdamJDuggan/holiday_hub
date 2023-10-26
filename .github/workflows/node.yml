@@ -13,6 +13,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "20"
-      - run: npm install
-      - run: npm run server --prefix server
+      - run: cd server && npm install
+      - run: npm run server
       - run: npm test

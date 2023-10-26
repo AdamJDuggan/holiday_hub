@@ -6,6 +6,7 @@ const { Response } = require("express");
 const app = require("../../index");
 // Services
 const { mongoConnect, mongoDisconnect } = require("../services/mongo");
+const sessionStore = require("../services/store");
 // Models
 const Goal = require("../models/goalModel");
 
@@ -24,6 +25,7 @@ describe("Goals tests...", () => {
   afterAll(async () => {
     // await deleteGoal(testGoal._id);
     await mongoDisconnect();
+    await sessionStore.quit();
   });
 
   describe("Test GET /goals", () => {

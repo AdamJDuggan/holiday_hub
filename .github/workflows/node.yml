@@ -1,4 +1,4 @@
-name: Test
+name: Holiday Hub CI
 on:
   push:
     branches: [master]
@@ -8,12 +8,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js version 20.9.0 lts
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v2
+      - name: Use Node.js version 21.9.0
+        uses: actions/setup-node@v2
         with:
-          node-version: "20.9.0"
+          node-version: "21.9.0"
       - run: npm install
-      - run: npm run client
-  deploy:
-    needs: build
+      - run: cd client && ng serve
+      - run: npm test

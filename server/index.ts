@@ -52,9 +52,12 @@ app.use(
 app.use(express.urlencoded({ extended: false, limit: "1kb" }));
 app.use(express.json({ limit: "1kb" }));
 
-// Main route
+// 
+app.use(express.static('../client/dist/client'))
+
+// Main route serving Angular app 
 app.get("/", (req: Request, res: Response) => {
-  res.status(200).send("HI!");
+  res.sendFile('index.html', {root: __dirname});
 });
 
 /** Routes */

@@ -1,17 +1,15 @@
 // 3rd party
 const request = require("supertest");
 const assert = require("assert");
-const {  Response } = require("express");
+const { Response } = require("express");
 // Server
-const app = require("../../index.js");
+const app = require("../../index");
 // Services
 const { mongoConnect, mongoDisconnect } = require("../services/mongo");
 // Models
 const Goal = require("../models/goalModel");
 
-
-
-const createGoal = async () => await Goal.create({text: "Test one"});
+const createGoal = async () => await Goal.create({ text: "Test one" });
 
 const deleteGoal = async (id: string) => {
   const goal = await Goal.findById(id);
@@ -31,7 +29,7 @@ describe("Goals tests...", () => {
   describe("Test GET /goals", () => {
     test("It should respond with 200 success", async () => {
       const res = await request(app).get("/api/goals");
-        expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(200);
     });
   });
 
@@ -42,12 +40,12 @@ describe("Goals tests...", () => {
         .send({ text: "Goal One!" });
       expect(res.statusCode).toBe(201);
       expect(res.body.message).toBe("Goal created");
-       await deleteGoal(res.body.id);
+      await deleteGoal(res.body.id);
     });
     test("It should catch missing required properties", async () => {
       const res = await request(app).post("/api/goals").send({});
       expect(res.statusCode).toBe(400);
-      console.log("RES!" , res)
+      console.log("RES!", res);
       expect(res.body.message).toBe("Please add a text field");
     });
   });
@@ -74,7 +72,7 @@ describe("Goals tests...", () => {
         .put(`/api/goals/${goalToUpdate._id}`)
         .send({ text: "Goal One updated" })
         .expect(200);
-      await deleteGoal(goalToUpdate.id)
+      await deleteGoal(goalToUpdate.id);
     });
   });
 

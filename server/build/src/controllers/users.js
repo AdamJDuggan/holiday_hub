@@ -10,8 +10,9 @@ const asyncHandler = require("express-async-handler");
 const { Request, Response } = require("express");
 // Models
 const User = require("../models/usersModel");
+const Session = require("../models/sessionModel");
 // Services
-const sessionStore = require("../services/store");
+// const sessionStore = require("../services/store")
 // Utils
 const createRandomId_1 = __importDefault(require("../utils/createRandomId"));
 const regsiterUser = asyncHandler(async (req, res) => {
@@ -53,9 +54,13 @@ const login = asyncHandler(async (req, res) => {
     const user = await User.findOne({ email });
     const correctPassword = await bcrypt.compare(password, user.password);
     if (user && correctPassword) {
+        var expires = new Date();
+        expires.setDate(expires.getDate() + 7);
         const randomId = (0, createRandomId_1.default)();
         res.cookie("userId", randomId);
-        await sessionStore.set(randomId, user.id);
+        Session.create({ cookie: randomId, userId: user.id, expires });
+        // req.session.userId = randomId;
+        // await sessionStore.set(randomId, user.id);
         res.json({
             _id: user.id,
             name: user.name,

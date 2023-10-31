@@ -1,11 +1,11 @@
-import { createClient } from "redis";
+// import { createClient } from "redis";
 
-const sessionStore = createClient();
+// const sessionStore = createClient();
 
-sessionStore.on("error", (err) => console.log("Redis Client Error", err));
+// sessionStore.on("error", (err) => console.log("Redis Client Error", err));
 
-const connectStore = async () => await sessionStore.connect();
+// const connectStore = async () => await sessionStore.connect();
 
-connectStore();
+// connectStore();
 
-module.exports = sessionStore;
+// module.exports = sessionStore;

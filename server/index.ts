@@ -10,14 +10,18 @@ const helment = require("helmet");
 const express = require("express");
 const dotenv = require("dotenv");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 // Services
-const { mongoConnect } = require("./src/services/mongo");
-const { sessionStore } = require("./src/services/store");
+const { mongoConnect, getSessionData } = require("./src/services/mongo");
+// const { sessionStore } = require("./src/services/store");
 // Routes
 const goalRouter = require("./src/routes/goals");
 const userRouter = require("./src/routes/users");
+// Services
+const cache = require("./src/services/cache");
 
 const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI;
 
 const app = express();
 
@@ -41,7 +45,7 @@ app.use(
       httpOnly: true,
       secure: true,
     },
-    store: sessionStore,
+    store: MongoStore.create({ mongoUrl: MONGO_URI, ttl: 200000 }),
   })
 );
 
@@ -53,7 +57,8 @@ app.use(express.urlencoded({ extended: false, limit: "1kb" }));
 app.use(express.json({ limit: "1kb" }));
 
 //
-app.use(express.static("../client/dist/client"));
+//app.use(express.static("../dist/client")); // For local
+app.use(express.static("public")); // For docker
 
 // Main route serving Angular app
 app.get("/", (req: Request, res: Response) => {
@@ -67,6 +72,8 @@ app.use("/api/users", userRouter);
 // Server
 const startServer = async () => {
   await mongoConnect();
+  await getSessionData();
+
   https
     .createServer(
       {

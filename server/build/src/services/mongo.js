@@ -4,7 +4,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 // Models
-const BlackList = require("../models/blacklistModel");
+const Session = require("../models/sessionModel");
+// Services
+const cache = require("./cache");
 // Required to run tests
 dotenv.config();
 const MONGO_URI = process.env.MONGO_URI;
@@ -17,20 +19,14 @@ const mongoConnect = async () => {
 const mongoDisconnect = async () => {
     await mongoose.disconnect();
 };
-const isTokenBlackListed = async (id) => await BlackList.findById(id);
-// Fire this when we start the server. Clear out expired docuements
-const migrateBlackListCollection = async () => {
-    const tokens = await BlackList.find();
-    // Async/await does not work in forEach loop
-    for (let i = 0; i < tokens.length - 1; i++) {
-        const token = tokens[i];
-        if (token > Date.now())
-            token.deleteOne();
-    }
+const getSessionData = async () => {
+    const sessions = await Session.find();
+    sessions.forEach((session) => {
+        cache.set(session.cookie, { ...session });
+    });
 };
 module.exports = {
     mongoConnect,
     mongoDisconnect,
-    isTokenBlackListed,
-    migrateBlackListCollection,
+    getSessionData,
 };

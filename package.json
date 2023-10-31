@@ -7,11 +7,9 @@
     "install-server": "npm install --prefix server",
     "build-server": "npm run build --prefix server",
     "test-server": "npm test --prefix server",
-    "run-server": "npm run server --prefix server",
     "install-client": "npm install --prefix client",
-    "server": "npm run server --prefix server",
+    "install": "npm install --prefix server && npm install --prefix client",
     "client": "cd client && ng serve"
-    
   },
   "keywords": [],
   "author": "Adam Duggan",

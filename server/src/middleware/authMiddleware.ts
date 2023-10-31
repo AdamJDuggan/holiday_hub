@@ -6,56 +6,57 @@ const { Request, Response, NextFunction } = require("express");
 // Models
 const User = require("../models/usersModel");
 // Services
-const sessionStore = require("../services/store")
-
-
-
+const cache = require("../services/cache");
 
 /**
  * Ensure a user has legitimate session cookie and auth token
  */
-const protect = asyncHandler(async (req: typeof Request, res: typeof Response, next: typeof NextFunction) => {
-  let token;
-  if (
-    req.headers.authorization && req.headers.authorization.startsWith("Bearer")
-  ) {
-    try {
-        
-      // Get token from header start with Bearer
-      token = req.headers.authorization.split(" ")[1];
-      // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      // Get user from the token
-      const mongoUser = await User.findById(decoded.id).select("-password");
-      // Get user id from Redis session store
-      const cookie = req.cookies["userId"];
-      const sessionUserId = await sessionStore.get(cookie);
+const protect = asyncHandler(
+  async (
+    req: typeof Request,
+    res: typeof Response,
+    next: typeof NextFunction
+  ) => {
+    let token;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      try {
+        // Get token from header start with Bearer
+        token = req.headers.authorization.split(" ")[1];
+        // Verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // Get user from the token
+        const mongoUser = await User.findById(decoded.id).select("-password");
+        // Get user id from Node-session session store
+        const cookie = req.cookies["userId"];
+        const cachedSession = await cache.get(cookie);
+        if (
+          JSON.stringify(cachedSession._doc.userId) ===
+          JSON.stringify(mongoUser._id)
+        )
+          return next();
+        else return res.status(401).json({ message: "NONE!!!" });
+      } catch (error) {
+        console.log(error);
+        res.status(401);
+        throw new Error("Not authorized");
+      }
+    }
 
-      console.log(sessionUserId)
-
-     
-
-
-      // Resolve if ids match
-      if(JSON.stringify(sessionUserId) === JSON.stringify(mongoUser._id)) return next();
-      
-      else return res.status(401).json({message: "NONE!!!"})        
-        
-        
-    } catch (error) {
-      console.log(error);
+    if (!token) {
       res.status(401);
-      throw new Error("Not authorized");
+      throw new Error("Not authorized, no token");
     }
   }
+);
 
-  if (!token) {
-    res.status(401);
-    throw new Error("Not authorized, no token");
-  }
-});
-
-const checkDuplicateEmail = (req: typeof Request, res: typeof Response, next: typeof NextFunction) => {
+const checkDuplicateEmail = (
+  req: typeof Request,
+  res: typeof Response,
+  next: typeof NextFunction
+) => {
   User.findOne({
     email: req.body.email,
   }).then((err: object, user: object) => {

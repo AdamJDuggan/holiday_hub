@@ -10,13 +10,17 @@ const helment = require("helmet");
 const express = require("express");
 const dotenv = require("dotenv");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 // Services
-const { mongoConnect } = require("./src/services/mongo");
-const { sessionStore } = require("./src/services/store");
+const { mongoConnect, getSessionData } = require("./src/services/mongo");
+// const { sessionStore } = require("./src/services/store");
 // Routes
 const goalRouter = require("./src/routes/goals");
 const userRouter = require("./src/routes/users");
+// Services
+const cache = require("./src/services/cache");
 const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI;
 const app = express();
 dotenv.config();
 // Security realted middleware!!
@@ -34,7 +38,7 @@ app.use(session({
         httpOnly: true,
         secure: true,
     },
-    store: sessionStore,
+    store: MongoStore.create({ mongoUrl: MONGO_URI, ttl: 200000 }),
 }));
 /**
  * Prevent attackers sending requests with large request bodies
@@ -54,6 +58,7 @@ app.use("/api/users", userRouter);
 // Server
 const startServer = async () => {
     await mongoConnect();
+    await getSessionData();
     https
         .createServer({
         key: fs.readFileSync("key.pem"),

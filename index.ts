@@ -28,9 +28,10 @@ const app = express();
 
 dotenv.config();
 
+// Access for Angular app
 app.use(
   cors({
-    origin: "http://localhost:4200",
+    origin: process.env.CLIENT_URL,
   })
 );
 
@@ -66,11 +67,6 @@ app.use(express.json({ limit: "1kb" }));
 //
 //app.use(express.static("../dist/client")); // For local
 //app.use(express.static("public")); // For docker
-
-// Main route serving Angular app
-// app.get("/", (req: Request, res: Response) => {
-//   res.sendFile("index.html", { root: __dirname });
-// });
 
 /** Routes */
 app.use("/api/goals", goalRouter);

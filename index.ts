@@ -12,6 +12,10 @@ const express = require("express");
 const dotenv = require("dotenv");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
+const { graphqlHTTP } = require("express-graphql");
+const { makeExecutableSchema } = require("@graphql-tools/schema");
+const { loadFilesSync } = require("@graphql-tools/load-files");
+
 // Services
 const { mongoConnect, getSessionData } = require("./src/services/mongo");
 // const { sessionStore } = require("./src/services/store");
@@ -28,6 +32,27 @@ const app = express();
 
 dotenv.config();
 
+const typesArray = loadFilesSync("**/*", {
+  extensions: ["graphql"],
+});
+const schema = makeExecutableSchema({
+  typeDefs: typesArray,
+});
+
+const root = {
+  products: require("./src/products/products.model"),
+  orders: require("./src/orders/orders.model"),
+};
+
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: schema,
+    rootValue: root,
+    graphiql: true,
+  })
+);
+
 // Access for Angular app
 app.use(
   cors({
@@ -35,7 +60,7 @@ app.use(
   })
 );
 
-// Security realted middleware!!
+// Security realted middleware
 app.use(helment());
 
 // Access session cookies in requests

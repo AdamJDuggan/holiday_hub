@@ -7,11 +7,6 @@ const { Request, Response } = require("express");
 const Goal = require("../models/goalModel");
 const getGoals = asyncHandler(async (req, res) => {
     const goals = await Goal.find();
-    for (let i = 0; i < goals.length - 1; i++) {
-        const goal = goals[i];
-        if (i === 0)
-            await goal.deleteOne();
-    }
     res.status(200).json(goals);
 });
 const postGoal = asyncHandler(async (req, res) => {

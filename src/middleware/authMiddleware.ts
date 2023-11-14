@@ -26,12 +26,14 @@ const protect = asyncHandler(
         // Get token from header start with Bearer
         token = req.headers.authorization.split(" ")[1];
         // Verify token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = await jwt.verify(token, process.env.JWT_SECRET);
         // Get user from the token
         const mongoUser = await User.findById(decoded.id).select("-password");
+
         // Get user id from Node-session session store
         const cookie = req.cookies["userId"];
         const cachedSession = await cache.get(cookie);
+
         if (
           JSON.stringify(cachedSession._doc.userId) ===
           JSON.stringify(mongoUser._id)

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 // Node
 const fs = require("fs");
+const path = require("path");
 const https = require("https");
 const cors = require("cors");
 // 3rd party
@@ -13,66 +14,31 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const { buildSchema } = require("graphql");
 const { graphqlHTTP } = require("express-graphql");
+const { loadFilesSync } = require("@graphql-tools/load-files");
+const { makeExecutableSchema } = require("@graphql-tools/schema");
 // Services
 const { mongoConnect, getSessionData } = require("./src/services/mongo");
 // Routes
-const goalRouter = require("./src/routes/goals");
-const userRouter = require("./src/routes/users");
+const goalRouter = require("./src/collections/goals/route");
+const userRouter = require("./src/collections/users/route");
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 const app = express();
 dotenv.config();
-const schema = buildSchema(`
-  type Query {
-    products: [Product]
-    orders: [Order]
-  }
-  type Product {
-    id: ID!
-    description: String!
-    reviews: [Review]
-    price: Float!
-  }
-  type Review {
-    rating: Int!
-    comment: String
-  }
-  type Order {
-    date: String!
-    subtotal: Float!
-    items: [OrderItem]
-  }
-  type OrderItem {
-    product: Product,
-    quantity: Int!
-  }
-`);
+const typesArray = loadFilesSync("./**/*.graphql");
+const schema = makeExecutableSchema({
+    typeDefs: typesArray,
+});
 const root = {
-    products: [
-        { id: "redshoe", description: "Red shoe", price: 42.12 },
-        { id: "bluejean", description: "Blue jeans", price: 55.55 },
-    ],
-    orders: [
-        {
-            date: "2005-05-05",
-            subtotal: 90.22,
-            items: [
-                {
-                    product: {
-                        id: "redshoe",
-                        description: "Old Red shoe",
-                        price: 32.12,
-                    },
-                },
-            ],
-        },
-    ],
+    products: require("./products/products.model"),
+    orders: require("./orders/orders.model"),
 };
 // Access for Angular app
 app.use(cors({
     origin: process.env.CLIENT_URL,
 }));
 // Security realted middleware
+// TODO- turn on only in prod as it blocks graphqli
 // app.use(helment());
 // Access session cookies in requests
 app.use(cookieParser());

@@ -4,7 +4,7 @@ const { rateLimit } = require("express-rate-limit");
 const asyncHandler = require("express-async-handler");
 const { Request, Response, NextFunction } = require("express");
 // Models
-const User = require("../models/usersModel");
+const User = require("../collections/users/model");
 // Services
 const cache = require("../services/cache");
 

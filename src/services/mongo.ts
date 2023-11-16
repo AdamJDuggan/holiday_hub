@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 // Models
-const Session = require("../models/sessionModel");
+const Session = require("../collections/sessions/model");
 // Services
 const cache = require("./cache");
 

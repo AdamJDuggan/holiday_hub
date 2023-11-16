@@ -4,12 +4,12 @@ const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const { Request, Response } = require("express");
 // Models
-const User = require("../models/usersModel");
-const Session = require("../models/sessionModel");
+const User = require("./model");
+const Session = require("../sessions/model");
 // Services
 // const sessionStore = require("../services/store")
 // Utils
-import createRandomId from "../utils/createRandomId";
+import createRandomId from "../../utils/createRandomId";
 
 const regsiterUser = asyncHandler(
   async (req: typeof Request, res: typeof Response) => {

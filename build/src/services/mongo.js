@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 // Models
-const Session = require("../models/sessionModel");
+const Session = require("../collections/sessions/model");
 // Services
 const cache = require("./cache");
 // Required to run tests

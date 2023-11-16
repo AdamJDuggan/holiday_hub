@@ -1,18 +1,17 @@
-import {Express} from 'express'
+import { Express } from "express";
 const express = require("express");
 
 const router: Express = express.Router();
 
-const { regsiterUser, login, getMe } = require("../controllers/users");
+const { regsiterUser, login, getMe } = require("./controller");
 const {
   protect,
   checkDuplicateEmail,
   rateLimiter,
-} = require("../middleware/authMiddleware");
+} = require("../../middleware/authMiddleware");
 
 router.post("/register", [rateLimiter, checkDuplicateEmail], regsiterUser);
 router.post("/login", [rateLimiter], login);
 router.get("/me", protect, getMe);
 
-
-module.exports =  router;
+module.exports = router;

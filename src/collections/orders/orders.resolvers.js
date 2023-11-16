@@ -1,9 +1,7 @@
-const ordersModel = require("./orders.model");
+const { getAllOrders } = require("./orders.model");
 
 module.exports = {
   Query: {
-    orders: () => {
-      return ordersModel.getAllOrders();
-    },
+    orders: getAllOrders,
   },
 };

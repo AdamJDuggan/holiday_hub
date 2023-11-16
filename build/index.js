@@ -25,14 +25,17 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 const app = express();
 dotenv.config();
-const typesArray = loadFilesSync("./**/*.graphql");
+// const typesArray = loadFilesSync("./src/collections/**/*.graphql");
+const typesArray = loadFilesSync("./src/collections/**/*", {
+    extensions: ["graphql"],
+});
+const resolversArray = loadFilesSync("./src/collections/**/*", {
+    extensions: [".resolvers.js"],
+});
 const schema = makeExecutableSchema({
     typeDefs: typesArray,
+    resolvers: resolversArray,
 });
-const root = {
-    products: require("./products/products.model"),
-    orders: require("./orders/orders.model"),
-};
 // Access for Angular app
 app.use(cors({
     origin: process.env.CLIENT_URL,
@@ -67,7 +70,7 @@ app.use(express.json({ limit: "1kb" }));
 /** Routes */
 app.use("/api/goals", goalRouter);
 app.use("/api/users", userRouter);
-app.use("/graphql", graphqlHTTP({ schema, rootValue: root, graphiql: true }));
+app.use("/graphql", graphqlHTTP({ schema, graphiql: true }));
 // Server
 const startServer = async () => {
     await mongoConnect();

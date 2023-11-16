@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "start production": "npm run build && node build/index.js",
-    "server": "nodemon --watch src/ --exec 'tsc && node build/index.js' -e ts",
+    "server": "nodemon --watch src/ --exec 'tsc && node build/index.js'",
     "build": "rimraf ./build && tsc",
     "lint": "eslint . --ext .ts",
     "deploy": "npm run cluster",

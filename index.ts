@@ -1,5 +1,3 @@
-import { NextFunction, Request, Response } from "express";
-
 // Node
 const fs = require("fs");
 const path = require("path");
@@ -7,12 +5,11 @@ const https = require("https");
 const cors = require("cors");
 // 3rd party
 const cookieParser = require("cookie-parser");
-const helment = require("helmet");
+const helmet = require("helmet");
 const express = require("express");
 const dotenv = require("dotenv");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
-const { buildSchema } = require("graphql");
 const { graphqlHTTP } = require("express-graphql");
 const { loadFilesSync } = require("@graphql-tools/load-files");
 const { makeExecutableSchema } = require("@graphql-tools/schema");
@@ -22,43 +19,42 @@ const { mongoConnect, getSessionData } = require("./src/services/mongo");
 const goalRouter = require("./src/collections/goals/route");
 const userRouter = require("./src/collections/users/route");
 
+/**
+ * Consts --------------------------
+ */
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
+const DEV = process.env.NODE_ENV === "development" ? false : true;
 
 const app = express();
 
+/**
+ * Config --------------------------
+ */
 dotenv.config();
 
-// const typesArray = loadFilesSync("./src/collections/**/*.graphql");
-
-const typesArray = loadFilesSync("./src/collections/**/*", {
-  extensions: ["graphql"],
-});
-
-const resolversArray = loadFilesSync("./src/collections/**/*", {
-  extensions: [".resolvers.js"],
-});
-
-const schema = makeExecutableSchema({
-  typeDefs: typesArray,
-  resolvers: resolversArray,
-});
-
-// Access for Angular app
+/**
+ * Middleware --------------------------
+ */
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
   })
 );
 
-// Security realted middleware
-// TODO- turn on only in prod as it blocks graphqli
-// app.use(helment());
+// Secure headers
+app.use(
+  helmet({
+    // Needed to run graphql palyground in development
+    contentSecurityPolicy: DEV,
+    crossOriginEmbedderPolicy: DEV,
+  })
+);
 
 // Access session cookies in requests
 app.use(cookieParser());
 
-/** Memory cache for session */
+// Memory cache for session
 app.use(
   session({
     name: "Alpha 3",
@@ -74,23 +70,39 @@ app.use(
   })
 );
 
-/**
- * Prevent attackers sending requests with large request bodies
- * that can exhaust server memory and/or fill disk space
- */
+// Prevent attackers sending requests with large request bodies
 app.use(express.urlencoded({ extended: false, limit: "1kb" }));
 app.use(express.json({ limit: "1kb" }));
 
-//
-//app.use(express.static("../dist/client")); // For local
-//app.use(express.static("public")); // For docker
+/**
+ * GraphQL --------------------------
+ */
+const typesArray = loadFilesSync("./src/collections/**/*", {
+  extensions: ["graphql"],
+});
 
-/** Routes */
+const resolversArray = loadFilesSync("./src/collections/**/*", {
+  extensions: [".resolvers.js"],
+});
+
+const graphqlSchema = makeExecutableSchema({
+  typeDefs: typesArray,
+  resolvers: resolversArray,
+});
+
+const useGraphQl = graphqlHTTP({ schema: graphqlSchema, graphiql: true });
+
+app.use("/graphql", useGraphQl);
+
+/**
+ * Routes --------------------------
+ */
 app.use("/api/goals", goalRouter);
 app.use("/api/users", userRouter);
-app.use("/graphql", graphqlHTTP({ schema, graphiql: true }));
 
-// Server
+/**
+ * Server --------------------------
+ */
 const startServer = async () => {
   await mongoConnect();
   await getSessionData();
@@ -107,8 +119,6 @@ const startServer = async () => {
 };
 
 startServer();
-
-module.exports = app;
 
 /**
  * Not needed if running pm2 which will do this for us

@@ -75,7 +75,7 @@ app.use(express.urlencoded({ extended: false, limit: "1kb" }));
 app.use(express.json({ limit: "1kb" }));
 
 /**
- * GraphQL --------------------------_
+ * GraphQL ----------------------------
  */
 const typesArray = loadFilesSync("./src/collections/**/*", {
   extensions: ["graphql"],

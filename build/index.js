@@ -25,6 +25,7 @@ const userRouter = require("./src/collections/users/route");
  */
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
+const DEV = process.env.NODE_ENV === "development" ? false : true;
 const app = express();
 /**
  * Config --------------------------
@@ -37,8 +38,11 @@ app.use(cors({
     origin: process.env.CLIENT_URL,
 }));
 // Secure headers
-// app.use(helmet());
-app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
+app.use(helmet({
+    // Needed to run graphql palyground in development
+    contentSecurityPolicy: DEV,
+    crossOriginEmbedderPolicy: DEV,
+}));
 // Access session cookies in requests
 app.use(cookieParser());
 // Memory cache for session
@@ -58,7 +62,7 @@ app.use(session({
 app.use(express.urlencoded({ extended: false, limit: "1kb" }));
 app.use(express.json({ limit: "1kb" }));
 /**
- * GraphQL --------------------------
+ * GraphQL ----------------------------
  */
 const typesArray = loadFilesSync("./src/collections/**/*", {
     extensions: ["graphql"],

@@ -7,8 +7,9 @@ const asyncHandler = require("express-async-handler");
 const { Request, Response, NextFunction } = require("express");
 // Models
 const User = require("../collections/users/model");
+const Session = require("../collections/sessions/model");
 // Services
-const cache = require("../services/cache");
+// const cache = require("../services/cache");
 /**
  * Ensure a user has legitimate session cookie and auth token
  */
@@ -25,12 +26,16 @@ const protect = asyncHandler(async (req, res, next) => {
             const mongoUser = await User.findById(decoded.id).select("-password");
             // Get user id from Node-session session store
             const cookie = req.cookies["userId"];
-            const cachedSession = await cache.get(cookie);
-            if (JSON.stringify(cachedSession._doc.userId) ===
-                JSON.stringify(mongoUser._id))
-                return next();
-            else
-                return res.status(401).json({ message: "NONE!!!" });
+            const session = await Session.findOne({ userId: mongoUser.id, cookie });
+            console.log("session", session);
+            // // console.log("sessionId", sessionId);
+            // if (
+            //   //JSON.stringify(cachedSession._doc.userId) ===
+            //   JSON.stringify(mongoUser._id)
+            // )
+            //   return next();
+            // else return res.status(401).json({ message: "NONE!!!" });
+            return next();
         }
         catch (error) {
             console.log(error);

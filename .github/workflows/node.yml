@@ -11,7 +11,7 @@ jobs:
       MONGO_URI: mongodb://localhost/client
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 20.x]
+        node-version: [20.x]
         mongodb-version: ["4.4"]
     runs-on: ubuntu-latest
     steps:
@@ -24,6 +24,6 @@ jobs:
         uses: supercharge/mongodb-github-action@1.6.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
-      - run: npm run install-server
-      - run: npm run build-server
-      - run: npm run test-server
+      - run: npm run install
+      - run: npm run build
+      - run: npm run test

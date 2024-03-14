@@ -67,7 +67,7 @@ const login = asyncHandler(
 
       res.cookie("userId", randomId);
 
-      Session.create({ cookie: randomId, userId: user.id, expires });
+      Session.create({ userId: user.id, cookie: randomId, expires });
 
       // req.session.userId = randomId;
 

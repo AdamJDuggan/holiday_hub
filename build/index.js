@@ -95,6 +95,7 @@ const startServer = async () => {
         .listen(PORT, () => console.log(`Server started on port ${PORT}`));
 };
 startServer();
+module.exports = app;
 /**
  * Not needed if running pm2 which will do this for us
  * Cluster to run multiple processes

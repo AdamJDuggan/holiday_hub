@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .ts",
     "deploy": "npm run cluster",
     "cluster": "pm2 start index.js -i max",
-    "test": "mocha --detectOpenHandles --forceExit"
+    "test": "jest --detectOpenHandles --forceExit"
   },
   "keywords": [],
   "author": "",

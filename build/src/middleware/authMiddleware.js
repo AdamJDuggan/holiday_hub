@@ -8,34 +8,29 @@ const { Request, Response, NextFunction } = require("express");
 // Models
 const User = require("../collections/users/model");
 const Session = require("../collections/sessions/model");
-// Services
-// const cache = require("../services/cache");
 /**
  * Ensure a user has legitimate session cookie and auth token
  */
 const protect = asyncHandler(async (req, res, next) => {
-    let token;
     if (req.headers.authorization &&
         req.headers.authorization.startsWith("Bearer")) {
         try {
-            // Get token from header start with Bearer
-            token = req.headers.authorization.split(" ")[1];
+            // Get token from header that starts with Bearer
+            const token = req.headers.authorization.split(" ")[1];
             // Verify token
             const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-            // Get user from the token
+            // Get MongoDB user from the token
             const mongoUser = await User.findById(decoded.id).select("-password");
-            // Get user id from Node-session session store
+            // Get user id from cookie
             const cookie = req.cookies["userId"];
+            // Get session with same user id and cookie
             const session = await Session.findOne({ userId: mongoUser.id, cookie });
-            console.log("session", session);
-            // // console.log("sessionId", sessionId);
-            // if (
-            //   //JSON.stringify(cachedSession._doc.userId) ===
-            //   JSON.stringify(mongoUser._id)
-            // )
-            //   return next();
-            // else return res.status(401).json({ message: "NONE!!!" });
-            return next();
+            if (mongoUser && session) {
+                return next();
+            }
+            else {
+                return res.status(401).json({ message: "NONE!!!" });
+            }
         }
         catch (error) {
             console.log(error);
@@ -43,7 +38,7 @@ const protect = asyncHandler(async (req, res, next) => {
             throw new Error("Not authorized");
         }
     }
-    if (!token) {
+    else {
         res.status(401);
         throw new Error("Not authorized, no token");
     }

@@ -1,14 +1,11 @@
 // 3rd party
 const request = require("supertest");
-const assert = require("assert");
-const { Response } = require("express");
 // Server
-const app = require("../../index");
+const app = require("../index.ts");
 // Services
-const { mongoConnect, mongoDisconnect } = require("../services/mongo");
-const sessionStore = require("../services/store");
+const { mongoConnect, mongoDisconnect } = require("../src/services/mongo.ts");
 // Models
-const Goal = require("../models/goalModel");
+const Goal = require("../src/collections/goals/model");
 
 const createGoal = async () => await Goal.create({ text: "Test one" });
 
@@ -25,7 +22,6 @@ describe("Goals tests...", () => {
   afterAll(async () => {
     // await deleteGoal(testGoal._id);
     await mongoDisconnect();
-    await sessionStore.quit();
   });
 
   describe("Test GET /goals", () => {
@@ -47,7 +43,6 @@ describe("Goals tests...", () => {
     test("It should catch missing required properties", async () => {
       const res = await request(app).post("/api/goals").send({});
       expect(res.statusCode).toBe(400);
-      console.log("RES!", res);
       expect(res.body.message).toBe("Please add a text field");
     });
   });
